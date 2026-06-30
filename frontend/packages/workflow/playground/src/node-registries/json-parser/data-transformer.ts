@@ -14,15 +14,19 @@
  * limitations under the License.
  */
 
-import { variableUtils } from '@coze-workflow/variable';
-import { type NodeDataDTO, type VariableMetaDTO } from '@coze-workflow/base';
+import {
+  type NodeDataDTO,
+  type OutputValueVO,
+  type VariableMetaDTO,
+} from '@coze-workflow/base/types';
 
 import { type FormData } from './types';
+import { normalizeJsonParserOutputs } from './normalize-outputs';
 import { createDefaultOutputs } from './constants';
 
 export const transformOnInit = (value: NodeDataDTO) => {
-  const outputMetas = value?.outputs?.map(output =>
-    variableUtils.dtoMetaToViewMeta(output as VariableMetaDTO),
+  const outputMetas = normalizeJsonParserOutputs(
+    value?.outputs as Array<VariableMetaDTO | OutputValueVO> | undefined,
   );
   const outputs =
     outputMetas && outputMetas.length > 0
@@ -40,7 +44,9 @@ export const transformOnInit = (value: NodeDataDTO) => {
 };
 
 export const transformOnSubmit = (value: FormData): NodeDataDTO => {
-  const outputs = (value.outputs?.length ? value.outputs : createDefaultOutputs())
+  const outputs = (
+    value.outputs?.length ? value.outputs : createDefaultOutputs()
+  )
     .slice(0, 1)
     .map(output =>
       variableUtils.viewMetaToDTOMeta({
