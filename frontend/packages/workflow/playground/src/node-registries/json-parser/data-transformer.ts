@@ -21,7 +21,10 @@ import {
 } from '@coze-workflow/base/types';
 
 import { type FormData } from './types';
-import { normalizeJsonParserOutputs } from './normalize-outputs';
+import {
+  normalizeJsonParserOutputs,
+  serializeJsonParserOutputs,
+} from './normalize-outputs';
 import { createDefaultOutputs } from './constants';
 
 export const transformOnInit = (value: NodeDataDTO) => {
@@ -44,16 +47,9 @@ export const transformOnInit = (value: NodeDataDTO) => {
 };
 
 export const transformOnSubmit = (value: FormData): NodeDataDTO => {
-  const outputs = (
-    value.outputs?.length ? value.outputs : createDefaultOutputs()
-  )
-    .slice(0, 1)
-    .map(output =>
-      variableUtils.viewMetaToDTOMeta({
-        ...output,
-        name: 'output',
-      }),
-    );
+  const outputs = serializeJsonParserOutputs(
+    value.outputs?.length ? value.outputs : createDefaultOutputs(),
+  );
 
   return {
     ...value,

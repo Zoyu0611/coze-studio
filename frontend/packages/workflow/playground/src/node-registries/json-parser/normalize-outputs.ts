@@ -35,3 +35,13 @@ export const toOutputMeta = (
 export const normalizeJsonParserOutputs = (
   outputs?: Array<VariableMetaDTO | OutputValueVO>,
 ): OutputValueVO[] | undefined => outputs?.map(toOutputMeta);
+
+export const serializeJsonParserOutputs = (
+  outputs?: OutputValueVO[],
+): VariableMetaDTO[] =>
+  (outputs || []).slice(0, 1).map(output =>
+    variableUtils.viewMetaToDTOMeta({
+      ...output,
+      name: 'output',
+    }),
+  );

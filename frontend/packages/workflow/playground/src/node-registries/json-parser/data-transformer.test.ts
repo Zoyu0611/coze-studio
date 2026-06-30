@@ -22,7 +22,10 @@ import {
   type VariableMetaDTO,
 } from '@coze-workflow/base/types';
 
-import { normalizeJsonParserOutputs } from './normalize-outputs';
+import {
+  normalizeJsonParserOutputs,
+  serializeJsonParserOutputs,
+} from './normalize-outputs';
 
 describe('json-parser data transformer', () => {
   it('preserves nested children when outputs are already view metas', () => {
@@ -79,5 +82,48 @@ describe('json-parser data transformer', () => {
         },
       ],
     });
+  });
+
+  it('serializes the first output back to dto format for test run submit', () => {
+    const outputs: OutputValueVO[] = [
+      {
+        key: 'root',
+        name: 'story_params',
+        type: ViewVariableType.Object,
+        children: [
+          {
+            key: 'genre_mode',
+            name: 'genre_mode',
+            type: ViewVariableType.String,
+          },
+        ],
+      },
+    ];
+
+    const result = serializeJsonParserOutputs(outputs);
+
+    expect(result).toEqual([
+      {
+        name: 'output',
+        type: VariableTypeDTO.object,
+        schema: [
+          {
+            name: 'genre_mode',
+            type: VariableTypeDTO.string,
+            assistType: undefined,
+            schema: undefined,
+            readonly: undefined,
+            required: undefined,
+            description: undefined,
+            defaultValue: undefined,
+          },
+        ],
+        assistType: undefined,
+        readonly: undefined,
+        required: undefined,
+        description: undefined,
+        defaultValue: undefined,
+      },
+    ]);
   });
 });
