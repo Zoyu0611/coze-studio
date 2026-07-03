@@ -224,13 +224,16 @@ export class WorkflowJSONFormat implements WorkflowJSONFormatContribution {
     if (json.data) {
       // Convert output
       variablesMeta.outputsPathList!.forEach(outputsPath => {
-        const variableMetas = get(json.data, outputsPath) as ViewVariableMeta[];
+        const variableMetas = get(json.data, outputsPath) as Array<
+          ViewVariableMeta | VariableMetaDTO
+        >;
         if (variableMetas && Array.isArray(variableMetas)) {
-          variableMetas.forEach((meta: ViewVariableMeta, index) => {
+          variableMetas.forEach((meta, index) => {
             if (!meta.type) {
               return;
             }
-            const newData = variableUtils.viewMetaToDTOMeta(meta);
+            const newData =
+              'key' in meta ? variableUtils.viewMetaToDTOMeta(meta) : meta;
             set(variableMetas, index, newData);
           });
         }
